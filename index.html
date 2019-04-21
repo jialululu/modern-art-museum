@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <link rel="stylesheet" type="text/css" href="styles/all.css" media="all" />
   <script src="//d3js.org/d3.v4.min.js"></script>
+  <script src="https://d3js.org/d3-queue.v3.min.js"></script>
   <script src="main.js"></script>
   <title>6.894 Final Project: Modern Art Museum</title>
 </head>
@@ -14,7 +15,19 @@
     <h1 class="title">Museum of Modern Art</h1>
     <p class="descriptions">6.894 Final Project</p>
   </div>
-  <div id="graphDiv"></div>
+  <div id="graphDiv">
+    <button type="button" id="foldGraphDiv">FOLD</button>
+  </div>
   <div id="hoverDiv"></div>
-  <div id="footerDiv"></div>
+  <div id="detailDiv">
+    <p>SELECTED ARTISTS:</p><br/>
+    <div id="selectedArtists"></div>
+    <div id="artistGraph"></div>
+  </div>
+  <div id="thumbnailDiv">
+    <button type="button" id="plotThumbnail">PLOT THUMBNAIL</button>
+    <div id="thumbnails"></div>
+    <div id="artworkSizes"></div>
+    <div id="artworkColor"></div>
+  </div>
 </body>

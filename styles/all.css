@@ -1,13 +1,54 @@
+body {
+  background-color: #4b4c4c;
+}
+
+div#graphDiv{
+  width:70%;
+}
+
+div#detailDiv{
+  width:26%;
+  height:90%;
+  background-color: white;
+  position:fixed;
+  top:3%;
+  right:2%;
+  border-radius: 5px;
+  overflow: auto;
+  padding:1% 20px;
+}
+
 .bar_wrapper{
   display: block;
   width:100%;
   overflow: auto;
+  margin:10px 0;
+}
+
+.bar_wrapper span.selected {
+  opacity:1;
+  border-top:2px solid;
+  border-buttom:2px solid;
 }
 
 .bar_wrapper span{
   height:55px;
   display:inline-block;
   float:left;
-  /* border:white 0.5px solid; */
-  margin:10px 0;
+  opacity:0.4;
+}
+
+.bar_wrapper span:hover{
+  opacity:1;
+}
+
+div#selectedArtists{
+  display: block;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: black 1px solid;
+}
+
+.selectedArtist{
+  margin:2px;
 }
