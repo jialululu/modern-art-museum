@@ -5,6 +5,7 @@ var svg1 = d3.select('#graphDiv').append('svg')
               .style('overflow','auto');
 
 var selectArtistsList = [];
+
 // helper functions
 function getRandomColor() {
   var letters = '0123456789ABCDEF';
@@ -160,7 +161,7 @@ function plot(error,artworks,artists){
     console.log("filteredData",filteredData)
 
     //plot thumbnail part
-    d3.select('div#thumbnails').selectAll('.image-wrapper')
+    var imageWrapper = d3.select('div#thumbnails').selectAll('.image-wrapper')
       .data(filteredData).enter()
       // .append('div')
       // .attr('class','item-wrapper')
@@ -172,23 +173,76 @@ function plot(error,artworks,artists){
           .style('width','30px')
           .style('border','none');
         var svg = d3.select(this)
+          .transition()
+          .duration(1000)
           .style('width',function(d){
-              // Todo: calculate new width based on artwork ratio
-              var nw = d3.select(this).select('image').nodes()[0].naturalWidth;
-              console.log(nw);
+              // console.log(d["Width (cm)"]/d["Height (cm)"]*300);
+              console.log(d3.select(this).select('image').attr('width'));
+              if (d["Width (cm)"]/d["Height (cm)"]) {
+                return d["Width (cm)"]/d["Height (cm)"]*300+'px';
+              } else {
+                return '300px';
+              }
           })
-          .style('border','#333333 20px solid');
-
-        var texts = svg.append('text')
-          .text(d);
+          .style('border-left','#333333 20px solid')
+          .style('border-right','#333333 20px solid');
+        d3.select(this).select('rect')
+          .transition()
+          .duration(1000)
+          .attr('x',function(d){
+              if (d["Width (cm)"]/d["Height (cm)"]) {
+                return d["Width (cm)"]/d["Height (cm)"]*300/2-d["Width (cm)"]/5;
+              } else {
+                return 150;
+              }
+          });
+        // var texts = svg.append('text')
+        //   .text(d);
       })
-      .append('image')
+    imageWrapper.append('image')
       .attr('xlink:href',function(d){
           return d['ThumbnailURL'];
       })
-      // .attr('width','200px')
       .attr('height','300px')
       .attr('class','thumbnail');
+
+    imageWrapper.append('line')
+      .attr('class','constructionLine')
+      .attr('x1','0').attr('y1','340')
+      .attr('x2','100%').attr('y2','340')
+      .style('stroke','grey')
+      .style('stroke-width','1px');
+
+    imageWrapper.append('rect')
+      .attr('class','artworkSizeRect')
+      .attr('height',function(d){
+          if (d["Height (cm)"]) {
+            return d["Height (cm)"]/5;
+          } else {
+            return 1;
+          }
+      })
+      .attr('width',function(d){
+          if (d["Width (cm)"]){
+            return d["Width (cm)"]/5;
+          } else {
+            return 1;
+          }
+      })
+      .attr('x',function(d){
+        if (d["Width (cm)"]){
+          return 15-d["Width (cm)"]/5;
+        } else {
+          return 14.5;
+        }
+      })
+      .attr('y',function(d){
+        if (d["Height (cm)"]) {
+          return 340-d["Height (cm)"]/10;
+        } else {
+          return 339.5;
+        }
+      });
   }
 
   // add function to fold and expand graphDiv

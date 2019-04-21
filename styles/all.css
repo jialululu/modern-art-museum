@@ -1,5 +1,23 @@
 body {
   background-color: #333333;
+  overflow: hidden;
+}
+
+button.utility-button{
+  color:#B5D3E7;
+  border:1px solid #B5D3E7;
+  border-radius: 3px;
+  padding:5px;
+  background-color: transparent;
+  margin-bottom: 10px;
+}
+
+h1.title{
+  color: #B5D3E7;
+}
+
+p {
+ color:#B5D3E7;
 }
 
 div#graphDiv{
@@ -33,11 +51,12 @@ div#graphDiv{
 div#detailDiv{
   width:26%;
   height:90%;
-  background-color: #666666;
+  background-color: #333333;
+  border:2px solid #B5D3E7;
   position:fixed;
   top:3%;
   right:2%;
-  border-radius: 5px;
+  border-radius: 10px;
   overflow: auto;
   padding:1% 20px;
   z-index: 5;
@@ -47,11 +66,15 @@ div#selectedArtists{
   display: block;
   margin-bottom: 10px;
   padding-bottom: 10px;
-  border-bottom: black 1px solid;
+  border-bottom: #B5D3E7 1px solid;
 }
 
-.selectedArtist{
+button.selectedArtist{
   margin:2px;
+  padding:2px;
+  border-radius: 2px;
+  border:none;
+  color:white;
 }
 
 
@@ -59,7 +82,7 @@ div#thumbnailDiv{
   margin-top: 20px;
   padding-top:10px;
   width:70%;
-  height:350px;
+  height:450px;
   white-space: nowrap;
   position: relative;
   overflow-x: scroll;
@@ -79,9 +102,13 @@ svg.image-wrapper {
   display: inline-block;
   vertical-align: middle;
   overflow: hidden;
-  height:300px;
+  height:400px;
 }
 
 img.thumbnail {
+  height:300px;
+}
 
+rect.artworkSizeRect{
+  fill:#B5D3E7;
 }
