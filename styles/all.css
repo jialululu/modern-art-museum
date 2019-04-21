@@ -1,21 +1,9 @@
 body {
-  background-color: #4b4c4c;
+  background-color: #333333;
 }
 
 div#graphDiv{
   width:70%;
-}
-
-div#detailDiv{
-  width:26%;
-  height:90%;
-  background-color: white;
-  position:fixed;
-  top:3%;
-  right:2%;
-  border-radius: 5px;
-  overflow: auto;
-  padding:1% 20px;
 }
 
 .bar_wrapper{
@@ -42,6 +30,19 @@ div#detailDiv{
   opacity:1;
 }
 
+div#detailDiv{
+  width:26%;
+  height:90%;
+  background-color: #666666;
+  position:fixed;
+  top:3%;
+  right:2%;
+  border-radius: 5px;
+  overflow: auto;
+  padding:1% 20px;
+  z-index: 5;
+}
+
 div#selectedArtists{
   display: block;
   margin-bottom: 10px;
@@ -51,4 +52,36 @@ div#selectedArtists{
 
 .selectedArtist{
   margin:2px;
+}
+
+
+div#thumbnailDiv{
+  margin-top: 20px;
+  padding-top:10px;
+  width:70%;
+  height:350px;
+  white-space: nowrap;
+  position: relative;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+div#thumbnails{
+  margin-top: 10px;
+}
+/* div.item-wrapper{
+
+} */
+
+svg.image-wrapper {
+  /* float:left; */
+  display: inline-block;
+  vertical-align: middle;
+  overflow: hidden;
+  height:300px;
+}
+
+img.thumbnail {
+
 }

@@ -17,13 +17,13 @@ function getRandomColor() {
 
 //load data
 d3.queue()
-  .defer(d3.csv,"datasets/moma_artworks.csv")
-  .defer(d3.csv,"datasets/moma_artists.csv")
+  .defer(d3.json,"datasets/moma_artworks.json")
+  .defer(d3.json,"datasets/moma_artists.json")
   .await(plot);
 function plot(error,artworks,artists){
 // d3.csv("datasets/moma_artworks.csv", function(error,data) {
   // return {
-  //     artist_id: d["Artist Id"],
+  //     artist_id: d["ConstituentID"],
   //     classification: d["Classification"],
   //     title: d["Title"]
   // };
@@ -41,14 +41,14 @@ function plot(error,artworks,artists){
       .object(artworks);
 
   var countByArtist = d3.nest()
-      .key(function(d){return d['Artist ID']}) //group data by artists
+      .key(function(d){return d['ConstituentID']}) //group data by artists
       .rollup(function(v){return v.length})
       .object(artworks);
 
   var nestByArtist = d3.nest()
-      .key(function(d){return d['Artist ID']}) //group data by artists
-      .object(artworks);
-  console.log(nestByArtist);
+      .key(function(d){return d['ConstituentID']}) //group data by artists
+      .object(artists);
+  // console.log(nestByArtist);
 
   var artistColor = {};
   const artistsList = Object.keys(countByArtist);
@@ -57,10 +57,11 @@ function plot(error,artworks,artists){
       var color = getRandomColor();
       artistColor[artist] = color;
   }
+
   console.log(countByDepartment);
   var nestedData = d3.nest()
       .key(function(d){return d['Department']}) //group data by department
-      .key(function(e){return e['Artist ID']}) //group data by artists
+      .key(function(e){return e['ConstituentID']}) //group data by artists
       .rollup(function(v){return v.length})
       .object(artworks);
 
@@ -83,7 +84,7 @@ function plot(error,artworks,artists){
       var bar = wrapper.selectAll('.bar')
           .data(Object.keys(data)).enter().append('span')
           .attr('class','bar')
-          // .attr('class',function(d){return 'artist-'+d;}) //d = artist id here
+          // .attr('class',function(d){return 'artist-'+d;}) //d = ConstituentID here
           .attr('artist',function(d){return d;})
           .style('width',function(d){
               // return data[d]+'px';
@@ -95,12 +96,13 @@ function plot(error,artworks,artists){
           .on('click',function(d){
               //Change style of selected bar
               selectArtistsList.push(d);
+              artistsNestById[d]['DisplayName'];
               d3.select(this)
                 .classed('selected',true)
                 .style('border-color',artistColor[d]);
               //TODO: Add graphs for each artists
               d3.select('#selectedArtists').append('button')
-                .html(nestByArtist[d][0]['Name'])
+                .html(nestByArtist[d][0]['DisplayName'])
                 .attr('class','selectedArtist')
                 .style('background-color',artistColor[d]);
 
@@ -118,8 +120,10 @@ function plot(error,artworks,artists){
   }
 
   let artistsNestById = d3.nest()
-      .key(function(d){return d['Artist ID']})
+      .key(function(d){return d['ConstituentID']})
       .object(artists);
+
+  // console.log('???',artistsNestById);
 
   var tooltip = d3.select("#hoverDiv").append('div')
         .attr("class","tooltipDiv");
@@ -130,8 +134,8 @@ function plot(error,artworks,artists){
     if (i <= 10){
       // console.log(d.getAttribute('artist'));
       // console.log(this);
-      var artistID = d.getAttribute('artist');
-      var name = artistsNestById[artistID][0]['Name'];
+      // var artistID = d.getAttribute('artist');
+      // var name = artistsNestById[artistID][0]['Name'];
       // console.log(name);
     }
   });
@@ -139,20 +143,44 @@ function plot(error,artworks,artists){
   d3.select('#plotThumbnail').on('click',generateThumbnail);
   //filter data based on selection
   function generateThumbnail(){
+
+    foldDiv();
+
     console.log("selectArtistsList",selectArtistsList);
-    var filteredData = artworks.filter(function(d){
-      return selectArtistsList.includes(d['Artist ID']);
+    var filteredData = artworks.filter(function(d,i){
+      var tempid;
+      if (d['ConstituentID'][0]) {
+        tempid = d['ConstituentID'][0].toString();
+      }
+      // if (i<10){console.log(d['ThumbnailURL']);}
+      return (selectArtistsList.includes(tempid)&&d['ThumbnailURL']);
     })
     console.log("filteredData",filteredData)
 
     //plot thumbnail part
     d3.select('div#thumbnails').selectAll('.image-wrapper')
-      .data(filteredData).enter().append('svg')
+      .data(filteredData).enter()
+      // .append('div')
+      // .attr('class','item-wrapper')
+      .append('svg')
       .attr('class','image-wrapper')
+      .style('width','30px')
+      .on('click',function(d){
+        d3.selectAll('.image-wrapper')
+          .style('width','30px')
+          .style('border','none');
+        var svg = d3.select(this)
+          .style('width','200px')
+          .style('border','#333333 20px solid');
+        svg.scrollTo();
+      })
       .append('image')
       .attr('xlink:href',function(d){
-          return d['']
-      });
+          return d['ThumbnailURL'];
+      })
+      // .attr('width','200px')
+      .attr('height','300px')
+      .attr('class','thumbnail');
   }
 
   // add function to fold and expand graphDiv
