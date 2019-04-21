@@ -17,7 +17,7 @@ function getRandomColor() {
 
 //load data
 d3.queue()
-  .defer(d3.json,"datasets/moma_artworks.json")
+  .defer(d3.json,"datasets/moma_artworks_s.json")
   .defer(d3.json,"datasets/moma_artists.json")
   .await(plot);
 function plot(error,artworks,artists){
@@ -57,6 +57,8 @@ function plot(error,artworks,artists){
       var color = getRandomColor();
       artistColor[artist] = color;
   }
+
+  console.log('???',artistColor);
 
   console.log(countByDepartment);
   var nestedData = d3.nest()
@@ -170,9 +172,15 @@ function plot(error,artworks,artists){
           .style('width','30px')
           .style('border','none');
         var svg = d3.select(this)
-          .style('width','200px')
+          .style('width',function(d){
+              // Todo: calculate new width based on artwork ratio
+              var nw = d3.select(this).select('image').nodes()[0].naturalWidth;
+              console.log(nw);
+          })
           .style('border','#333333 20px solid');
-        svg.scrollTo();
+
+        var texts = svg.append('text')
+          .text(d);
       })
       .append('image')
       .attr('xlink:href',function(d){
