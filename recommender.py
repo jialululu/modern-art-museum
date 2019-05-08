@@ -140,7 +140,4 @@ def plot_neighbors(folder_path,k):
 if __name__ == "__main__":
     folder_path = "test_MOMA" #folder name where all the images are stored
     k = 11 #number of recommendations + 1
-    # image_name = "179238.jpg"
-    # all_images,images_info = load_img_from_folder(folder_path)
-    # print(images_info[0])
     plot_neighbors(folder_path,k)

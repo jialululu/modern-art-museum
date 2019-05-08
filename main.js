@@ -59,7 +59,7 @@ function plot(error,artworks,artists){
       artistColor[artist] = color;
   }
 
-  console.log('???',artistColor);
+  console.log('artistColor',artistColor);
 
   console.log(countByDepartment);
   var nestedData = d3.nest()
@@ -74,6 +74,10 @@ function plot(error,artworks,artists){
   var div = d3.select('#graphDiv').append('div')
       .attr('id','departmentDiv');
 
+  var barTooltipDiv = div.append("div")
+      .attr("class", "barTooltip")
+      .style("opacity", 0);
+
   const keys = Object.keys(nestedData);
   for (const key of keys){
       // key = departments here
@@ -82,9 +86,18 @@ function plot(error,artworks,artists){
       var total = countByDepartment[key];
 
       var wrapper = d3.select('#departmentDiv').append('div')
+          .attr('class','wrapper')
+          .attr('id','wrapper' + keys.indexOf(key));
+
+      var departmentDesc = wrapper.append('div')
+          .attr('class','departmentDesc')
+          .html(key+' : '+countByDepartment[key] + ' items');
+
+      var barWrapper = wrapper.append('div')
           .attr('class','bar_wrapper')
           .attr('id','bar_wrapper' + keys.indexOf(key));
-      var bar = wrapper.selectAll('.bar')
+
+      var bar = barWrapper.selectAll('.bar')
           .data(Object.keys(data)).enter().append('span')
           .attr('class','bar')
           // .attr('class',function(d){return 'artist-'+d;}) //d = ConstituentID here
@@ -96,26 +109,37 @@ function plot(error,artworks,artists){
           .style('background-color',function(d){
               return artistColor[d];
           })
+          .on('mouseover',function(d){
+              barTooltipDiv.style('opacity',1);
+              barTooltipDiv.html(artistsNestById[d][0]['DisplayName'] + '</br>' + artistsNestById[d][0]['ArtistBio'])
+              .style("left", (d3.event.pageX) + "px")
+              .style("top", (d3.event.pageY - 50) + "px");
+          })
+          .on('mouseout',function(d){
+              barTooltipDiv.style('opacity',0);
+          })
           .on('click',function(d){
               //Change style of selected bar
-              selectArtistsList.push(d);
-              artistsNestById[d]['DisplayName'];
-              d3.select(this)
-                .classed('selected',true)
-                .style('border-color',artistColor[d]);
-              //TODO: Add graphs for each artists
-              d3.select('#selectedArtists').append('button')
-                .html(nestByArtist[d][0]['DisplayName'])
-                .attr('class','selectedArtist')
-                .style('background-color',artistColor[d]);
+              if (selectArtistsList.indexOf(d) < 0){
+                selectArtistsList.push(d);
+                // artistsNestById[d]['DisplayName'];
+                d3.select(this)
+                  .classed('selected',true)
+                  .style('border-color',artistColor[d]);
+                //TODO: Add graphs for each artists
+                d3.select('#selectedArtists').append('button')
+                  .html(nestByArtist[d][0]['DisplayName'])
+                  .attr('class','selectedArtist')
+                  .style('background-color',artistColor[d]);
+              }
 
-              var svg = d3.select('#artistGraph').append('svg')
-                .attr('width','100%')
-                .attr('height','300px');
-              svg.append('circle')
-                .attr('cx','50%')
-                .attr('cy','150px')
-                .attr('r','140px');
+              // var svg = d3.select('#artistGraph').append('svg')
+              //   .attr('width','100%')
+              //   .attr('height','300px');
+              // svg.append('circle')
+              //   .attr('cx','50%')
+              //   .attr('cy','150px')
+              //   .attr('r','140px');
               //TODO: remove selected artists and update highlights
               //TODO: remove all
           })
@@ -259,20 +283,23 @@ function plot(error,artworks,artists){
     .on('click',foldDiv);
 
   function foldDiv() {
-    d3.selectAll('.bar_wrapper')
+    d3.selectAll('.wrapper')
       // .transition()
       //   .attr('duration',1000)
-        .style('height','8px')
-        .style('margin','3px 0');
+        .style('height','8px');
+        // .style('margin','3px 0');
     d3.select('button#foldGraphDiv')
       .html('EXPAND')
       .on('click',expandDiv);
+    d3.selectAll('.departmentDesc')
+      .style('display','none');
   }
 
   function expandDiv() {
-    d3.selectAll('.bar_wrapper')
-      .style('height','55px')
-      .style('margin','10px 0');
+    d3.selectAll('.wrapper')
+      .style('height','60px');
+      d3.selectAll('.departmentDesc')
+        .style('display','block');
     d3.select('button#foldGraphDiv')
       .html('FOLD')
       .on('click',foldDiv);
