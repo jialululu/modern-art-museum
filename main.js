@@ -186,16 +186,25 @@ function plot(error,artworks,artists){
           })
           .style('border-left','#333333 20px solid')
           .style('border-right','#333333 20px solid');
-        d3.select(this).select('rect')
-          .transition()
-          .duration(1000)
-          .attr('x',function(d){
-              if (d["Width (cm)"]/d["Height (cm)"]) {
-                return d["Width (cm)"]/d["Height (cm)"]*300/2-d["Width (cm)"]/5;
-              } else {
-                return 150;
-              }
-          });
+          d3.select(this).select('.artworkSizeRect')
+            .transition()
+            .duration(1000)
+            .attr('x',function(d){
+                if (d["Width (cm)"]/d["Height (cm)"]) {
+                  return d["Width (cm)"]/d["Height (cm)"]*300/2-d["Width (cm)"]/5;
+                } else {
+                  return 150;
+                }
+            });
+
+          d3.select(this).append('rect')
+            .attr('class','descriptionBox')
+            .attr('width','100%')
+            .attr('height','40');
+          d3.select(this).append('text')
+            .attr('x','20')
+            .attr('y','20')
+            .text('Hello');
         // var texts = svg.append('text')
         //   .text(d);
       })

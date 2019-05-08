@@ -24,6 +24,10 @@ div#graphDiv{
   width:70%;
 }
 
+button#plotThumbnail{
+  margin-top: 10px;
+}
+
 .bar_wrapper{
   display: block;
   width:100%;
@@ -47,6 +51,7 @@ div#graphDiv{
 .bar_wrapper span:hover{
   opacity:1;
 }
+
 
 div#detailDiv{
   width:26%;
