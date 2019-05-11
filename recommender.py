@@ -27,13 +27,12 @@ def layer_difference(feature_a, feature_x):
             total += (A[i][j]-G[i][j])**2
     return total/(4 * (N**2) * (M**2))
 
-def style_feature_method(tar,cand,k):
+def style_feature_method(base_model,tar,cand,k):
     # print("---- EXTRACT STYLE FEATURES FROM IMAGES ----")
     layers_style = ['conv1_1', 'conv2_1', 'conv3_1', 'conv4_1', 'conv5_1']
     layers_name = ['block1_conv1','block2_conv1','block3_conv1','block4_conv1','block5_conv1']
 
     layers_style_weights = [0.2,0.2,0.2,0.2,0.2]
-    base_model = vgg19.VGG19(weights='imagenet')
 
     def preprocess(img_path):
         img = load_img(img_path, target_size=(224, 224))
@@ -102,6 +101,7 @@ def load_single_img(path):
     return numpy_image_test
 
 def plot_neighbors(folder_path,k):
+    base_model = vgg19.VGG19(weights='imagenet')
     all_images,images_info = load_img_from_folder(folder_path)
     print("number of candidates:")
     print(len(images_info))
@@ -115,7 +115,7 @@ def plot_neighbors(folder_path,k):
         image_path = folder_path + "/" + image_name
         tar_image = load_single_img(image_path)
 
-        idx_loss = style_feature_method(image_path,all_paths,k)
+        idx_loss = style_feature_method(base_model,image_path,all_paths,k)
 
         style_cand = []
 
