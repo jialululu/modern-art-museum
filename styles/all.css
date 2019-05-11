@@ -187,6 +187,11 @@ svg.graphWrapper{
   display: block;
 }
 
+rect.artistBox{
+  stroke-width: 1;
+  stroke: floralwhite;
+}
+
 div.artworkDetails{
   position:absolute;
   width:100%;
