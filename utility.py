@@ -1,8 +1,9 @@
 import json
 
-with open('datasets/data-1.json') as json_file:
+with open('datasets/data_s.json') as json_file:
     data = json.load(json_file)
 
+print(data[0])
 result = []
 for d in data:
     acum = 0
@@ -11,6 +12,6 @@ for d in data:
         c.append(acum)
         acum += c[1]
 
-print(data)
-with open('datasets/data-1-1.json','w') as fp:
-    json.dump(result,fp)
+# print(data)
+with open('datasets/data_final.json','w') as fp:
+    json.dump(data,fp)

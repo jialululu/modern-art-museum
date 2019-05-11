@@ -18,36 +18,25 @@ function getRandomColor() {
 }
 
 function convertToRGB(list){
-    console.log('color-list',list)
     result = 'rgb('
     list.forEach(function(d){
       result = result + d + ',';
     })
     result = result.substring(0,result.length-1) + ')';
-    console.log('result',result)
     return result;
 }
 
 //load data
 d3.queue()
-  .defer(d3.json,"datasets/data-1.json")
+  .defer(d3.json,"datasets/data_final.json")
   .defer(d3.json,"datasets/moma_artists.json")
   .await(plot);
 function plot(error,artworks,artists){
-// d3.csv("datasets/moma_artworks.csv", function(error,data) {
-  // return {
-  //     artist_id: d["ConstituentID"],
-  //     classification: d["Classification"],
-  //     title: d["Title"]
-  // };
-// }).then(function(data){
+
   if (error) throw error;
   console.log(artworks[0]);
   console.log(artists[0]);
-  //format rawartworks
-  // rawartworks.forEach(function(d){
-  //   //process data
-  // })
+
   var countByDepartment = d3.nest()
       .key(function(d){return d['Department']})
       .rollup(function(v){return v.length})
@@ -62,8 +51,6 @@ function plot(error,artworks,artists){
       .key(function(d){return d['ConstituentID']})
       .object(artworks);
 
-  // console.log('???',nestByArtistId);
-
   var nestByArtist = d3.nest()
       .key(function(d){return d['ConstituentID']}) //group data by artists
       .object(artists);
@@ -77,9 +64,6 @@ function plot(error,artworks,artists){
       artistColor[artist] = color;
   }
 
-  console.log('artistColor',artistColor);
-
-  console.log(countByDepartment);
   var nestedData = d3.nest()
       .key(function(d){return d['Department']}) //group data by department
       .key(function(e){return e['ConstituentID']}) //group data by artists
@@ -87,13 +71,14 @@ function plot(error,artworks,artists){
       .object(artworks);
 
   // console.log(JSON.stringify(nestedData));
-  console.log(Object.keys(nestedData));
+  // console.log(Object.keys(nestedData));
 
   var div = d3.select('#graphDiv').append('div')
       .attr('id','departmentDiv');
 
-  var barTooltipDiv = div.append("div")
+  var barTooltipDiv = d3.select('body').append("div")
       .attr("class", "barTooltip")
+      .style("left","0").style("top","0")
       .style("opacity", 0);
 
   const keys = Object.keys(nestedData);
@@ -117,9 +102,9 @@ function plot(error,artworks,artists){
 
       var bar = barWrapper.selectAll('.bar')
           .data(Object.keys(data)).enter().append('span')
-          .attr('class','bar')
           // .attr('class',function(d){return 'artist-'+d;}) //d = ConstituentID here
-          .attr('artist',function(d){return d;})
+          .attr('class',function(d){return 'bar bar'+d;})
+          // .attr('class','bar')
           .style('width',function(d){
               // return data[d]+'px';
               return data[d]/total*100+'%';
@@ -139,16 +124,14 @@ function plot(error,artworks,artists){
               .style("top", (d3.event.pageY - 50) + "px");
           })
           .on('mouseout',function(d){
-              barTooltipDiv.style('opacity',0);
+              barTooltipDiv.style('opacity',0).style('x','0px').style('y','0px');
           })
           .on('click',function(d){
               //Change style of selected bar
               if (selectArtistsList.indexOf(d) < 0){
                 selectArtistsList.push(d);
-                // artistsNestById[d]['DisplayName'];
-                d3.select(this)
-                  .classed('selected',true)
-                  .style('border-color',artistColor[d]);
+                d3.selectAll('.bar'+d).classed('selected',true);
+
                 //TODO: Add graphs for each artists
                 d3.select('#selectedArtists').append('button')
                   .html(function(){
@@ -161,8 +144,12 @@ function plot(error,artworks,artists){
                   .style('background-color',artistColor[d])
                   .on('click',function(){
                       var index = selectArtistsList.indexOf(d)
+                      console.log('???',d);
                       selectArtistsList.splice(index,1);
                       d3.select(this).remove();
+                      console.log('???',d3.selectAll('bar'+d));
+                      d3.selectAll('.bar'+d).classed('selected',false);
+
                   });
               }
 
@@ -174,39 +161,17 @@ function plot(error,artworks,artists){
       .key(function(d){return d['ConstituentID']})
       .object(artists);
 
-  // console.log('???',artistsNestById);
-
-  var tooltip = d3.select("#hoverDiv").append('div')
-        .attr("class","tooltipDiv");
-
-  //TODO: Add tooltip and hover effects
-  var allBars = d3.selectAll(".bar").nodes();
-  allBars.forEach(function(d,i){
-    if (i <= 10){
-      // console.log(d.getAttribute('artist'));
-      // console.log(this);
-      // var artistID = d.getAttribute('artist');
-      // var name = artistsNestById[artistID][0]['Name'];
-      // console.log(name);
-    }
-  });
+  // var tooltip = d3.select("#hoverDiv").append('div')
+  //       .attr("class","tooltipDiv");
 
   d3.select('#plotThumbnail').on('click',generateThumbnail);
+
   //filter data based on selection
   function generateThumbnail(){
 
     foldDiv();
 
     console.log("selectArtistsList",selectArtistsList);
-    // var filteredData = artworks.filter(function(d,i){
-    //   var tempid;
-    //   if (d['ConstituentID'][0]) {
-    //     tempid = d['ConstituentID'][0].toString();
-    //   }
-    //   // if (i<10){console.log(d['ThumbnailURL']);}
-    //   return (selectArtistsList.includes(tempid)&&d['ThumbnailURL']);
-    // })
-    // console.log("filteredData",filteredData)
     var filteredData = nestByArtistId;
     if ((selectArtistsList.length != 0)&&(selectArtistsList!=displayedArtist)){
       plotSelected(selectArtistsList,filteredData);
@@ -217,9 +182,10 @@ function plot(error,artworks,artists){
     // remove deselected artists
     console.log("displayedArtist",displayedArtist)
     for (const did in displayedArtist){
-        if (selectArtistsList.indexOf(did) < 0){
-          console.log("removing", divId)
-          var divId = "#artistDiv"+did;
+        if (selectArtistsList.indexOf(displayedArtist[did]) < 0){
+
+          var divId = "#artistDiv"+displayedArtist[did];
+          console.log(d3.select(divId));
           d3.select(divId).remove();
         }
     }
@@ -262,6 +228,11 @@ function plot(error,artworks,artists){
                 .text('5cm = 1px').attr('class','labels')
                 .attr('text-anchor','end')
                 .attr('x','45px').attr('y','250px');
+            thumbnailLabelsSvg
+                .append('text')
+                .text('palette').attr('class','labels')
+                .attr('text-anchor','end')
+                .attr('x','45px').attr('y','290px');
 
             var thumbnailWrapper = artistWrapper.append('div')
               .attr('class','thumbnailWrapper');
@@ -280,13 +251,17 @@ function plot(error,artworks,artists){
               .attr('class','thumbnail')
               .attr('id',function(d){return 'thumbnail'+d['ObjectID'];});
 
-            console.log('img',img);
-            console.log('img',img.node());
-            img_width = img.node().getBoundingClientRect().width;
-            console.log('img_width',img_width);
+            // console.log('img',img);
+            // console.log('img',img.node());
+            // img_width = img.node().getBoundingClientRect().width;
+            // console.log('img_width',img_width);
 
             imageWrapper.on('click',function(d){
                 d3.selectAll('.artworkDetails').remove();
+                d3.selectAll('.colorCodes').remove();
+
+                // show artwork's details
+                showArtworkDetails(d);
 
                 d3.selectAll('.image-wrapper')
                   .style('width','30px')
@@ -304,8 +279,8 @@ function plot(error,artworks,artists){
                         return '200px';
                       }
                   })
-                  .style('border-left','#333333 20px solid')
-                  .style('border-right','#333333 20px solid');
+                  .style('border-left','black 20px solid')
+                  .style('border-right','black 20px solid');
 
                   svg.select('img')
                   .style('transform','translate(0,0)');
@@ -322,11 +297,11 @@ function plot(error,artworks,artists){
                     });
 
                   plotDetails(d3.select(this));
-                  // d3.select(this).select('.artworkDetails').style('display','block');
+                  plotColorAnalysis(d3.select(this).select('svg'));
               })
 
-            function plotDetails(imageWrapper){
-                imageWrapper.append('div').attr('class','artworkDetails')
+            function plotDetails(imageWrapper_i){
+                imageWrapper_i.append('div').attr('class','artworkDetails')
                   .html(function(d){
                       return d['Title'] + ' </br> ' + d['Date'] + ' | ' + d['Medium']
                   });
@@ -335,9 +310,27 @@ function plot(error,artworks,artists){
             var graphWrapper = imageWrapper.append('svg')
                 .attr('class','graphWrapper');
 
+            function plotColorAnalysis(graphWrapper){
+                let foldedWidth = 28;
+                let blockHeight = 20;
+                let blockYPosition = 65;
+                let blocksGap = 2;
+                var colorCodes = graphWrapper.selectAll('.colorCodes')
+                  .data(function(d){
+                      return d['Domain color'];}).enter()
+                  .append('rect')
+                  .attr('class','colorCodes')
+                  .attr('x',function(d,i){return d[2]*100 + '%';})
+                  .attr('y',blockYPosition+'px')
+                  .attr('height',blockHeight + 'px').attr('width',function(d,i){return d[1]*100 + '%';})
+                  .attr('fill',function(d){
+                      return convertToRGB(d[0]);
+                  });
+            }
+
             function plotSize(){
               // Plot artwork size graph
-              let sizeYPosition = 50;
+              let sizeYPosition = 40;
               graphWrapper.append('line')
                 .attr('class','constructionLine')
                 .attr('x1','0').attr('y1',sizeYPosition+'px')
@@ -378,24 +371,22 @@ function plot(error,artworks,artists){
               }
             plotSize();
 
-            function plotColorAnalysis(){
+            function plotMaxAnalysis(){
                 let foldedWidth = 28;
-                let blockHeight = 30;
+                let blockHeight = 20;
                 let blockYPosition = 65;
-                let blocksGap = 2;
-                var colorCodes = graphWrapper.selectAll('.colorCodes')
-                  .data(function(d){
-                      return d['Domain color'];}).enter()
+                let blocksGap = 1;
+                var colorMax = graphWrapper
                   .append('rect')
-                  .attr('class','colorCodes')
-                  .attr('x',function(d,i){return i*30+'px';})
+                  .attr('class','colorMax')
+                  .attr('x',blocksGap + 'px')
                   .attr('y',blockYPosition+'px')
-                  .attr('height',blockHeight + 'px').attr('width',function(d,i){return d[1]*100 + '%'})
+                  .attr('height',blockHeight + 'px').attr('width',foldedWidth+'px')
                   .attr('fill',function(d){
-                      return convertToRGB(d[0]);
+                      return convertToRGB(d['Max Color']);
                   });
             }
-            plotColorAnalysis();
+            plotMaxAnalysis();
           }
         }
     }
@@ -426,5 +417,16 @@ function plot(error,artworks,artists){
     d3.select('button#foldGraphDiv')
       .html('FOLD')
       .on('click',foldDiv);
+  }
+
+  var artworkDetailDiv = d3.select('#selectedArtworks');
+  artworkDetailDiv.append('p').html('SELECTED ARTWORKS:');
+  artworkDetailDiv.append('p')
+    .html("click on artwork's thumbnail to see details and recommendations")
+    .attr('class','labels');
+
+  function showArtworkDetails(artwork){
+      artworkDetailDiv.append('div')
+        .attr('class','artworkDesc');
   }
 }

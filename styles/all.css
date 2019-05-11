@@ -1,11 +1,11 @@
 body {
-  background-color: #333333;
+  background-color: black;
   overflow: scroll;
 }
 
 button.utility-button{
-  color:#B5D3E7;
-  border:1px solid #B5D3E7;
+  color:white;
+  border:1px solid white;
   border-radius: 3px;
   padding:5px;
   background-color: transparent;
@@ -13,17 +13,17 @@ button.utility-button{
 }
 
 h1.title{
-  color: #B5D3E7;
+  color: white;
 }
 
 p {
- color:#B5D3E7;
+ color:white;
 }
 
 div#graphDiv{
   width:1000px;
   padding-bottom: 10px;
-  /* border-bottom: 1px solid #B5D3E7; */
+  /* border-bottom: 1px solid white; */
 }
 
 div#thumbnailDiv{
@@ -57,7 +57,7 @@ span.bar{
   height:40px;
   display:inline-block;
   float:left;
-  opacity:0.4;
+  opacity:0.3;
 }
 
 span.bar:hover{
@@ -78,7 +78,7 @@ div.barTooltip{
   padding: 5px;
   font-size:11px;
   color:white;
-  background-color:#333333;
+  background-color:black;
   border: white 1px solid;
   border-radius: 4px;
   z-index: 5;
@@ -98,8 +98,8 @@ svg#thumbnailabelsSvg{
 div#detailDiv{
   width:20%;
   height:90%;
-  background-color: #333333;
-  border:2px solid #B5D3E7;
+  background-color: black;
+  border:2px solid white;
   position:fixed;
   top:3%;
   right:2%;
@@ -107,13 +107,19 @@ div#detailDiv{
   overflow: auto;
   padding:1% 20px;
   z-index: 3;
+  font-family:sans-serif;
+}
+
+div#detailDiv p{
+  margin-top: 0px;
+  margin-bottom: 10px;
 }
 
 div#selectedArtists{
   display: block;
   margin-bottom: 10px;
-  padding-bottom: 10px;
-  /* border-bottom: #B5D3E7 1px solid; */
+  padding-bottom: 20px;
+  border-bottom: grey 0.5px solid;
 }
 
 button.selectedArtist{
@@ -126,11 +132,11 @@ button.selectedArtist{
 
 div.artistDiv{
   width:100%;
-  height:320px;
+  height:322px;
   padding: 5px 0px;
   border-top: 0.5px solid grey;
   clear:both;
-  /* border-bottom: 1px solid #B5D3E7; */
+  /* border-bottom: 1px solid white; */
 }
 
 div.artistDesc{
@@ -152,8 +158,8 @@ div.thumbnailLabels{
 
 div.thumbnailWrapper{
   width:700px;
-  height:320px;
-  margin-top: 12px;
+  height:310px;
+  margin-top: 20px;
   white-space: nowrap;
   position: relative;
   overflow-x: scroll;
@@ -206,5 +212,23 @@ div.artworkDetails text{
 }
 
 rect.artworkSizeRect{
-  fill:#B5D3E7;
+  fill:white;
+  opacity:0.5;
+}
+
+.thumbnailWrapper::-webkit-scrollbar-track
+{
+  background-color: black;
+  border:grey solid 0.5px;
+}
+
+.thumbnailWrapper::-webkit-scrollbar
+{
+  height: 5px;
+  background-color: white;
+}
+
+.thumbnailWrapper::-webkit-scrollbar-thumb
+{
+  background-color: white;
 }
