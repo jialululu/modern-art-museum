@@ -17,9 +17,20 @@ function getRandomColor() {
   return color;
 }
 
+function convertToRGB(list){
+    console.log('color-list',list)
+    result = 'rgb('
+    list.forEach(function(d){
+      result = result + d + ',';
+    })
+    result = result.substring(0,result.length-1) + ')';
+    console.log('result',result)
+    return result;
+}
+
 //load data
 d3.queue()
-  .defer(d3.json,"datasets/moma_artworks_s.json")
+  .defer(d3.json,"datasets/data-1.json")
   .defer(d3.json,"datasets/moma_artists.json")
   .await(plot);
 function plot(error,artworks,artists){
@@ -222,6 +233,7 @@ function plot(error,artworks,artists){
                 .attr('class','artistDiv')
                 .attr('id','artistDiv'+id)
                 .attr('objectID',id);
+
             var artistInfo = artistsNestById[id][0];
             var artworksInfo = filteredData[id];
             console.log('artistInfo',artistInfo);
@@ -325,10 +337,11 @@ function plot(error,artworks,artists){
 
             function plotSize(){
               // Plot artwork size graph
+              let sizeYPosition = 50;
               graphWrapper.append('line')
                 .attr('class','constructionLine')
-                .attr('x1','0').attr('y1','40')
-                .attr('x2','100%').attr('y2','40')
+                .attr('x1','0').attr('y1',sizeYPosition+'px')
+                .attr('x2','100%').attr('y2',sizeYPosition+'px')
                 .style('stroke','grey')
                 .style('stroke-width','1px');
 
@@ -357,9 +370,9 @@ function plot(error,artworks,artists){
                 })
                 .attr('y',function(d){
                   if (d["Height (cm)"]) {
-                    return 40-d["Height (cm)"]/10;
+                    return sizeYPosition-d["Height (cm)"]/10;
                   } else {
-                    return 39.5;
+                    return sizeYPosition - 0.5;
                   }
                 });
               }
@@ -368,13 +381,21 @@ function plot(error,artworks,artists){
             function plotColorAnalysis(){
                 let foldedWidth = 28;
                 let blockHeight = 30;
+                let blockYPosition = 65;
                 let blocksGap = 2;
                 var colorCodes = graphWrapper.selectAll('.colorCodes')
-                  .data(d['Domain color']).enter()
+                  .data(function(d){
+                      return d['Domain color'];}).enter()
                   .append('rect')
-                  .attr('class','colorCodes');
+                  .attr('class','colorCodes')
+                  .attr('x',function(d,i){return i*30+'px';})
+                  .attr('y',blockYPosition+'px')
+                  .attr('height',blockHeight + 'px').attr('width',function(d,i){return d[1]*100 + '%'})
+                  .attr('fill',function(d){
+                      return convertToRGB(d[0]);
+                  });
             }
-            // plotColorAnalysis();
+            plotColorAnalysis();
           }
         }
     }
