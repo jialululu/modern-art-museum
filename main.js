@@ -357,7 +357,7 @@ function plot(error,artworks,artists){
                     .duration(1000)
                     .attr('x',function(d){
                         if (d["Width (cm)"]/d["Height (cm)"]) {
-                          return d["Width (cm)"]/d["Height (cm)"]*200/2 - d["Width (cm)"]/sizeScaleRatio*2;
+                          return d["Width (cm)"]/d["Height (cm)"]*200/2 - d["Width (cm)"]/sizeScaleRatio/2;
                         } else {
                           return 100;
                         }

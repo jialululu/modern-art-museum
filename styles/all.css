@@ -312,7 +312,7 @@ rect.artworkSizeRect{
 }
 
 div#footer{
-  margin: 10px 0;
-  padding: 10px 0;
+  margin: 0 0;
+  padding: 20px 0;
   border-top: grey 0.5px solid;
 }
