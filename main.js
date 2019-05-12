@@ -315,18 +315,18 @@ function plot(error,artworks,artists){
                   return d['ThumbnailURL'];
               })
               .attr('height','200px')
+              .attr('width','auto')
               .attr('class','thumbnail')
               .attr('id',function(d){return 'thumbnail'+d['ObjectID'];});
 
-            // console.log('img',img);
             // console.log('img',img.node());
-            // img_width = img.node().getBoundingClientRect().width;
+            // img_width = img.node().getBoundingClientRect();
             // console.log('img_width',img_width);
 
             imageWrapper.on('click',function(d){
                 d3.selectAll('.artworkDetails').remove();
                 d3.selectAll('.colorCodes').remove();
-
+                d3.selectAll('.thumbnail').style('transform','translate(-50%,0)');
                 // show artwork's details
                 showArtworkDetails(d);
 
@@ -338,13 +338,14 @@ function plot(error,artworks,artists){
                   .transition()
                   .duration(1000)
                   .style('width',function(d){
-
                       if (d["Width (cm)"]/d["Height (cm)"]) {
                         return d["Width (cm)"]/d["Height (cm)"]*200+'px';
                       } else {
                         return '200px';
                       }
                   })
+                  // .style('margin-left','0px')
+                  // .style('margin-right','0px')
                   .style('border-left','black 20px solid')
                   .style('border-right','black 20px solid');
 
@@ -356,7 +357,7 @@ function plot(error,artworks,artists){
                     .duration(1000)
                     .attr('x',function(d){
                         if (d["Width (cm)"]/d["Height (cm)"]) {
-                          return d["Width (cm)"]/d["Height (cm)"]*200/2-d["Width (cm)"]/sizeScaleRatio*2;
+                          return d["Width (cm)"]/d["Height (cm)"]*200/2 - d["Width (cm)"]/sizeScaleRatio*2;
                         } else {
                           return 100;
                         }
