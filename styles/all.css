@@ -213,7 +213,7 @@ div.artistDiv{
 }
 
 div.artistDesc{
-  width:200px;
+  width:20%;
   height:300px;
   float:left;
   margin:10px;
@@ -223,14 +223,14 @@ div.artistDesc{
 
 div.thumbnailLabels{
   margin:10px 0;
-  width:55px;
+  width:6%;
   height:300px;
   float:left;
   border-right: 0.5px solid white;
 }
 
 div.thumbnailWrapper{
-  width:700px;
+  width:70%;
   height:310px;
   margin-top: 20px;
   white-space: nowrap;

@@ -156,7 +156,7 @@ function plot(error,artworks,artists){
   var slider = document.getElementById("zoomRange");
   slider.oninput = function() {
     var zoomValue = this.value;
-    d3.selectAll('.wrapper').style('width',1000*zoomValue+'px');
+    d3.selectAll('.wrapper').style('width',100*zoomValue+'%');
   }
 
   let artistsNestById = d3.nest()
@@ -319,9 +319,9 @@ function plot(error,artworks,artists){
               .attr('class','thumbnail')
               .attr('id',function(d){return 'thumbnail'+d['ObjectID'];});
 
-            // console.log('img',img.node());
-            // img_width = img.node().getBoundingClientRect();
-            // console.log('img_width',img_width);
+            console.log('img',img.node());
+            img_width = img.node().getBoundingClientRect();
+            console.log('img_width',img.node());
 
             imageWrapper.on('click',function(d){
                 d3.selectAll('.artworkDetails').remove();
@@ -499,7 +499,7 @@ function plot(error,artworks,artists){
             return Object.values(countByDepartment)[i]/maxCount*100+'%';
         });
     d3.select('#normalizeBar')
-      .html('DENORMALIZE')
+      .html('NORMALIZE BAR GRAPH')
       .on('click',cancelNormalize);
     }
   }
@@ -510,7 +510,7 @@ function plot(error,artworks,artists){
       .duration(1000)
       .style('width','100%');
     d3.select('#normalizeBar')
-      .html('NORMALIZE BAR GRAPH')
+      .html('DENORMALIZE BAR GRAPH')
       .on('click',normalizeBarGraph);
   }
   var artworkDetailDiv = d3.select('#selectedArtworks');
