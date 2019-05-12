@@ -42,13 +42,11 @@ function plot(error,artworks,artists){
       .rollup(function(v){return v.length})
       .object(artworks);
 
+  var departmentList = Object.keys(countByDepartment);
+
   var countByArtist = d3.nest()
       .key(function(d){return d['ConstituentID']}) //group data by artists
       .rollup(function(v){return v.length})
-      .object(artworks);
-
-  var nestByArtistId = d3.nest()
-      .key(function(d){return d['ConstituentID']})
       .object(artworks);
 
   var nestByArtist = d3.nest()
@@ -69,9 +67,6 @@ function plot(error,artworks,artists){
       .key(function(e){return e['ConstituentID']}) //group data by artists
       .rollup(function(v){return v.length})
       .object(artworks);
-
-  // console.log(JSON.stringify(nestedData));
-  // console.log(Object.keys(nestedData));
 
   var div = d3.select('#graphDiv').append('div')
       .attr('id','departmentDiv');
@@ -106,7 +101,6 @@ function plot(error,artworks,artists){
           .attr('class',function(d){return 'bar bar'+d;})
           // .attr('class','bar')
           .style('width',function(d){
-              // return data[d]+'px';
               return data[d]/total*100+'%';
           })
           .style('background-color',function(d){
@@ -116,7 +110,7 @@ function plot(error,artworks,artists){
               barTooltipDiv.style('opacity',1);
               barTooltipDiv.html(function(){
                 if (artistsNestById[d]){
-                  return artistsNestById[d][0]['DisplayName'] + '</br>' + artistsNestById[d][0]['ArtistBio'];
+                  return artistsNestById[d][0]['DisplayName'] + '</br>' + artistsNestById[d][0]['ArtistBio'] + '</br>' + nestedData[key][d] + ' items';
                 } else {
                   return 'Known Artist';
               }})
@@ -127,6 +121,7 @@ function plot(error,artworks,artists){
               barTooltipDiv.style('opacity',0).style('x','0px').style('y','0px');
           })
           .on('click',function(d){
+
               //Change style of selected bar
               if (selectArtistsList.indexOf(d) < 0){
                 selectArtistsList.push(d);
@@ -157,12 +152,16 @@ function plot(error,artworks,artists){
 
   }
 
+  // zoom
+  var slider = document.getElementById("zoomRange");
+  slider.oninput = function() {
+    var zoomValue = this.value;
+    d3.selectAll('.wrapper').style('width',1000*zoomValue+'px');
+  }
+
   let artistsNestById = d3.nest()
       .key(function(d){return d['ConstituentID']})
       .object(artists);
-
-  // var tooltip = d3.select("#hoverDiv").append('div')
-  //       .attr("class","tooltipDiv");
 
   d3.select('#plotThumbnail').on('click',generateThumbnail);
 
@@ -171,7 +170,46 @@ function plot(error,artworks,artists){
 
     foldDiv();
 
-    console.log("selectArtistsList",selectArtistsList);
+    // add filters
+    var filtersDiv = d3.select('div#filtersDiv').style('display','block');
+    d3.selectAll(".filterCheckbox").on("change",update);
+    update();
+
+    function update(){
+      displayedArtist = [];
+      d3.selectAll('.artistDiv').remove();
+
+      var choices = [];
+      d3.selectAll(".filterCheckbox").each(function(d){
+        cb = d3.select(this);
+        if(cb.property("checked")){
+          choices.push(departmentList[cb.property("value")]);
+        }
+      });
+
+      console.log("updating",choices);
+
+      if(choices.length > 0){
+        filteredArtworks = artworks.filter(function(d,i){return choices.includes(d['Department']);});
+      } else {
+        filteredArtworks = artworks;
+      }
+
+      var nestByArtistId = d3.nest()
+          .key(function(d){return d['ConstituentID']})
+          .object(filteredArtworks);
+
+      console.log("selectArtistsList",selectArtistsList);
+
+      if ((selectArtistsList.length != 0)&&(selectArtistsList!=displayedArtist)){
+        plotSelected(selectArtistsList,nestByArtistId);
+      }
+
+    }
+
+  }
+
+  function updateThumbnail(){
     var filteredData = nestByArtistId;
     if ((selectArtistsList.length != 0)&&(selectArtistsList!=displayedArtist)){
       plotSelected(selectArtistsList,filteredData);
@@ -193,8 +231,8 @@ function plot(error,artworks,artists){
     for (const id of selectArtistsList){
         if (displayedArtist.indexOf(id) < 0){
           displayedArtist.push(id)
-          console.log(id)
-          if (artistsNestById[id]){
+          // console.log('???',filteredData[id]);
+          if (artistsNestById[id]&&filteredData[id]){
             var artistWrapper = d3.select('div#thumbnailDiv').append('div')
                 .attr('class','artistDiv')
                 .attr('id','artistDiv'+id)
@@ -202,9 +240,10 @@ function plot(error,artworks,artists){
 
             var artistInfo = artistsNestById[id][0];
             var artworksInfo = filteredData[id];
-            console.log('artistInfo',artistInfo);
+            // console.log('artistInfo',artistInfo);
             // console.log('artworksInfo',artworksInfo);
-
+            var labelXPosition = 47;
+            var sizeScaleRatio = 10;
             var artistDesc = artistWrapper.append('div')
                 .attr('class','artistDesc')
                 .html(artistInfo['DisplayName'] + '</br>' + artistInfo['ArtistBio']);
@@ -217,22 +256,22 @@ function plot(error,artworks,artists){
                 .append('text')
                 .text('preview').attr('class','labels')
                 .attr('text-anchor','end')
-                .attr('x','45px').attr('y','100px');
+                .attr('x',labelXPosition+'px').attr('y','100px');
             thumbnailLabelsSvg
                 .append('text')
                 .text('size').attr('class','labels')
                 .attr('text-anchor','end')
-                .attr('x','45px').attr('y','235px');
+                .attr('x',labelXPosition+'px').attr('y','235px');
             thumbnailLabelsSvg
                 .append('text')
-                .text('5cm = 1px').attr('class','labels')
+                .text(sizeScaleRatio+'cm=1px').attr('class','labels')
                 .attr('text-anchor','end')
-                .attr('x','45px').attr('y','250px');
+                .attr('x',labelXPosition+'px').attr('y','250px');
             thumbnailLabelsSvg
                 .append('text')
                 .text('palette').attr('class','labels')
                 .attr('text-anchor','end')
-                .attr('x','45px').attr('y','290px');
+                .attr('x',labelXPosition+'px').attr('y','290px');
 
             var thumbnailWrapper = artistWrapper.append('div')
               .attr('class','thumbnailWrapper');
@@ -271,7 +310,6 @@ function plot(error,artworks,artists){
                   .transition()
                   .duration(1000)
                   .style('width',function(d){
-                      console.log(d3.select(this).select('image'));
 
                       if (d["Width (cm)"]/d["Height (cm)"]) {
                         return d["Width (cm)"]/d["Height (cm)"]*200+'px';
@@ -290,21 +328,17 @@ function plot(error,artworks,artists){
                     .duration(1000)
                     .attr('x',function(d){
                         if (d["Width (cm)"]/d["Height (cm)"]) {
-                          return d["Width (cm)"]/d["Height (cm)"]*200/2-d["Width (cm)"]/5;
+                          return d["Width (cm)"]/d["Height (cm)"]*200/2-d["Width (cm)"]/sizeScaleRatio*2;
                         } else {
                           return 100;
                         }
                     });
 
-                  plotDetails(d3.select(this));
+                  // plotDetails(d3.select(this));
                   plotColorAnalysis(d3.select(this).select('svg'));
               })
 
             function plotDetails(imageWrapper_i){
-                imageWrapper_i.append('div').attr('class','artworkDetails')
-                  .html(function(d){
-                      return d['Title'] + ' </br> ' + d['Date'] + ' | ' + d['Medium']
-                  });
             }
 
             var graphWrapper = imageWrapper.append('svg')
@@ -331,6 +365,7 @@ function plot(error,artworks,artists){
             function plotSize(){
               // Plot artwork size graph
               let sizeYPosition = 40;
+              let sizeScaleRatio = 10;
               graphWrapper.append('line')
                 .attr('class','constructionLine')
                 .attr('x1','0').attr('y1',sizeYPosition+'px')
@@ -342,21 +377,21 @@ function plot(error,artworks,artists){
                 .attr('class','artworkSizeRect')
                 .attr('height',function(d){
                     if (d["Height (cm)"]) {
-                      return d["Height (cm)"]/5;
+                      return d["Height (cm)"]/sizeScaleRatio;
                     } else {
                       return 1;
                     }
                 })
                 .attr('width',function(d){
                     if (d["Width (cm)"]){
-                      return d["Width (cm)"]/5;
+                      return d["Width (cm)"]/sizeScaleRatio;
                     } else {
                       return 1;
                     }
                 })
                 .attr('x',function(d){
                   if (d["Width (cm)"]){
-                    return 15-d["Width (cm)"]/5;
+                    return 15-d["Width (cm)"]/sizeScaleRatio;
                   } else {
                     return 14.5;
                   }
@@ -419,14 +454,61 @@ function plot(error,artworks,artists){
       .on('click',foldDiv);
   }
 
+  d3.select('#normalizeBar')
+    .on('click',normalizeBarGraph);
+
+  var maxCount = Math.max(...Object.values(countByDepartment));
+  console.log(maxCount);
+
+  function normalizeBarGraph() {
+
+    for (const i in Object.keys(countByDepartment)){
+      d3.select('#bar_wrapper'+i)
+        .transition()
+        .duration(1000)
+        .style('width',function(){
+            return Object.values(countByDepartment)[i]/maxCount*100+'%';
+        });
+    d3.select('#normalizeBar')
+      .html('DENORMALIZE')
+      .on('click',cancelNormalize);
+    }
+  }
+
+  function cancelNormalize() {
+    d3.selectAll('.bar_wrapper')
+      .transition()
+      .duration(1000)
+      .style('width','100%');
+    d3.select('#normalizeBar')
+      .html('NORMALIZE BAR GRAPH')
+      .on('click',normalizeBarGraph);
+  }
   var artworkDetailDiv = d3.select('#selectedArtworks');
   artworkDetailDiv.append('p').html('SELECTED ARTWORKS:');
   artworkDetailDiv.append('p')
     .html("click on artwork's thumbnail to see details and recommendations")
     .attr('class','labels');
 
-  function showArtworkDetails(artwork){
-      artworkDetailDiv.append('div')
-        .attr('class','artworkDesc');
+  var descDiv = artworkDetailDiv.append('div')
+    .attr('class','artworkDesc');
+  var descText = descDiv.append('p').attr('class','descriptions');
+
+  var recommendationDiv = d3.select('#recommendation');
+  recommendationDiv.append('p').html('SIMILAR ARTWORKS:');
+  recommendationDiv.append('p')
+    .html("similiar artworks are computed by extracting style features using an pre-trained VGG19 model")
+    .attr('class','labels');
+  var recommendWrapper = recommendationDiv.append('div').attr('id','recommend-wrapper');
+
+  function showArtworkDetails(d){
+
+      descText.html(function(){
+          return d['Title'] + ' </br> ' + d['Date'] + ' </br></br> ' + d['Medium'] + '</br>';
+      });
+      descText.append('div').append('a').attr('href',function(){
+          return d['URL']
+      }).html(">>> go to artwork's webpage")
+      .attr('class','link');
   }
 }
