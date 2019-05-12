@@ -248,6 +248,34 @@ function plot(error,artworks,artists){
                 .attr('class','artistDesc')
                 .html(artistInfo['DisplayName'] + '</br>' + artistInfo['ArtistBio']);
 
+            // the matrix of artists' artwork color representation
+            // var artistMatrix = artistDesc.append("svg")
+            //     .attr('class', 'artistMatrix');
+            //
+            // var birthyr = artistInfo['BeginDate']
+            //
+            // var matTooltipDiv = d3.select('body').append("div")
+            //     .attr("class", "matTooltip")
+            //     .style("opacity", 0);
+            //
+            // artistMatrix.selectAll('.artistBox')
+            //     .data(function (d){return d['color'];}).enter()
+            //     .append('rect')
+            //     .attr('class', 'artistBox')
+            //     .attr('x', function(d,i){return (i%10)*10;})
+            //     .attr('y', function(d,i){return (parseInt(i/10));})
+            //     .attr('height', 10)
+            //     .attr('width', 10)
+            //     .attr('fill', function(d){return convertToRGB(d);})
+            //     .on('mouseover',function(d,i){
+            //         matTooltipDiv.style('opacity',1);
+            //         matTooltipDiv.html(function (){
+            //         return str(birthyr + i);})
+            //             .style("left", (d3.event.pageX) + 5 + "px")
+            //             .style("top", (d3.event.pageY - 50) + "px");
+            //     });
+
+
             // plotArtistGraph(artistInfo);
             var thumbnailLabelsSvg = artistWrapper.append('div')
                 .attr('class','thumbnailLabels')
