@@ -1,6 +1,7 @@
 # modern-art-museums
 
 Visualization URL: https://github.mit.edu/pages/6894-sp19/modern-art-museums/ 
+
 Interactive Poster: https://youtu.be/P5spt-hrf68
 
 **Project Introduction**
