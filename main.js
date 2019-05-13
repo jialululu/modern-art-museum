@@ -30,12 +30,14 @@ function convertToRGB(list){
 d3.queue()
   .defer(d3.json,"datasets/compress_color_artwork_final.json")
   .defer(d3.json,"datasets/moma_artist_final.json")
+  .defer(d3.json,"datasets/similar_vecs_final.json")
   .await(plot);
-function plot(error,artworks,artists){
+function plot(error,artworks,artists,recommends){
 
   if (error) throw error;
   console.log(artworks[0]);
-  console.log(artists[460]);
+  console.log(artists[0]);
+  console.log(recommends[3]);
 
   var countByDepartment = d3.nest()
       .key(function(d){return d['Department']})
@@ -58,6 +60,10 @@ function plot(error,artworks,artists){
       .key(function(d){return d['ConstituentID']})
       .object(artists);
 
+  var artworksNestbyId = d3.nest()
+      .key(function(d){return d['ObjectID']})
+      .object(artworks);
+
   var artistColor = {};
   const artistsList = Object.keys(countByArtist);
 
@@ -77,6 +83,11 @@ function plot(error,artworks,artists){
 
   var barTooltipDiv = d3.select('body').append("div")
       .attr("class", "barTooltip")
+      .style("left","0").style("top","0")
+      .style("opacity", 0);
+
+  var recTooltipDiv = d3.select('body').append("div")
+      .attr("class", "recTooltipDiv")
       .style("left","0").style("top","0")
       .style("opacity", 0);
 
@@ -112,7 +123,7 @@ function plot(error,artworks,artists){
               // console.log(artistsNestById[d[0]])
               if (artistsNestById[d[0]]){
                 var repColor = artistsNestById[d[0]][0]['Represent_color'];
-                console.log('???',repColor)
+                // console.log('???',repColor)
               } else {
                 var repColor = [255,255,255];
               }
@@ -126,11 +137,13 @@ function plot(error,artworks,artists){
                 } else {
                   return 'Known Artist';
               }})
-              .style("left", (d3.event.pageX) + 5 + "px")
-              .style("top", (d3.event.pageY - 50) + "px");
+          })
+          .on('mousemove',function(d){
+              barTooltipDiv.style("left", (d3.event.pageX) + 10 + "px")
+              .style("top", (d3.event.pageY - 60) + "px");
           })
           .on('mouseout',function(d){
-              barTooltipDiv.style('opacity',0).style('x','0px').style('y','0px');
+              barTooltipDiv.style('opacity',0);
           })
           .on('click',function(d){
 
@@ -555,5 +568,35 @@ function plot(error,artworks,artists){
           return d['URL']
       }).html(">>> go to artwork's webpage")
       .attr('class','link');
+
+      d3.selectAll('.recommendImg').remove();
+      var img = recommendWrapper.selectAll('.recommendImg')
+        .data(recommends[d['ObjectID']]).enter()
+        .append('img')
+        .attr('src',function(d){
+            if (artworksNestbyId[d]){
+              return artworksNestbyId[d][0]['ThumbnailURL'];
+            } else {
+              console.log("couldn't find artworks id" + d);
+            }
+        })
+        .attr('max-width','90%')
+        .attr('height','100px')
+        .attr('class','recommendImg')
+        .classed('float_left',function(d,i){return (i/2 == Math.round(i/2));})
+        .attr('id',function(d){return 'recommendImg'+d['ObjectID'];})
+        .on('mouseover',function(d){
+          recTooltipDiv.style('opacity',1);
+          recTooltipDiv.html(function(){
+              return '"' + artworksNestbyId[d][0]['Title'] + '" by ' + artworksNestbyId[d][0]['Artist'] + '</br>' + artworksNestbyId[d][0]['Date'];
+          });
+        })
+        .on('mousemove',function(d){
+            recTooltipDiv.style("left", (d3.event.pageX - 120) + "px")
+            .style("top", (d3.event.pageY - 40) + "px");
+        })
+        .on('mouseout',function(d){
+            recTooltipDiv.style('opacity',0).style('left','0px').style('top','0px');
+        });
   }
 }
