@@ -29,13 +29,13 @@ function convertToRGB(list){
 //load data
 d3.queue()
   .defer(d3.json,"datasets/compress_color_artwork_final.json")
-  .defer(d3.json,"datasets/moma_artists.json")
+  .defer(d3.json,"datasets/moma_artist_final.json")
   .await(plot);
 function plot(error,artworks,artists){
 
   if (error) throw error;
   console.log(artworks[0]);
-  console.log(artists[0]);
+  console.log(artists[460]);
 
   var countByDepartment = d3.nest()
       .key(function(d){return d['Department']})
@@ -53,6 +53,10 @@ function plot(error,artworks,artists){
       .key(function(d){return d['ConstituentID']}) //group data by artists
       .object(artists);
   // console.log(nestByArtist);
+
+  let artistsNestById = d3.nest()
+      .key(function(d){return d['ConstituentID']})
+      .object(artists);
 
   var artistColor = {};
   const artistsList = Object.keys(countByArtist);
@@ -104,7 +108,15 @@ function plot(error,artworks,artists){
               return data[d]/total*100+'%';
           })
           .style('background-color',function(d){
-              return artistColor[d];
+              // console.log(d[0])
+              // console.log(artistsNestById[d[0]])
+              if (artistsNestById[d[0]]){
+                var repColor = artistsNestById[d[0]][0]['Represent_color'];
+                console.log('???',repColor)
+              } else {
+                var repColor = [255,255,255];
+              }
+              return convertToRGB(repColor);
           })
           .on('mouseover',function(d){
               barTooltipDiv.style('opacity',1);
@@ -136,7 +148,14 @@ function plot(error,artworks,artists){
                           return "Unknown Artist";
                   }})
                   .attr('class','selectedArtist')
-                  .style('background-color',artistColor[d])
+                  .style('background-color',function(){
+                      if (artistsNestById[d[0]]){
+                        var repColor = artistsNestById[d[0]][0]['Represent_color'];
+                      } else {
+                        var repColor = [255,255,255];
+                      }
+                      return convertToRGB(repColor);
+                  })
                   .on('click',function(){
                       var index = selectArtistsList.indexOf(d)
                       console.log('???',d);
@@ -158,10 +177,6 @@ function plot(error,artworks,artists){
     var zoomValue = this.value;
     d3.selectAll('.wrapper').style('width',100*zoomValue+'%');
   }
-
-  let artistsNestById = d3.nest()
-      .key(function(d){return d['ConstituentID']})
-      .object(artists);
 
   d3.select('#plotThumbnail').on('click',generateThumbnail);
 
