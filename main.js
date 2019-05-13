@@ -45,6 +45,15 @@ function rgbToHsl(r, g, b) {
   return [ h, s, l ];
 }
 
+function convertToHSL(list){
+    result = 'hsl('
+    list.forEach(function(d){
+      result = result + d + ',';
+    })
+    result = result.substring(0,result.length-1) + ')';
+    return result;
+}
+
 //load data
 d3.queue()
   .defer(d3.json,"datasets/compress_color_artwork_final.json")
@@ -178,7 +187,7 @@ function plot(error,artworks,artists,recommends){
                 } else {
                   var repColor = [255,255,255];
                 }
-                var lightness = rgbToHsl(repColor[0],repColor[1],repColor[2])[2];
+                var hsl = rgbToHsl(repColor[0],repColor[1],repColor[2]);
 
                 //TODO: Add graphs for each artists
                 d3.select('#selectedArtists').append('button')
