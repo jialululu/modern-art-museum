@@ -348,3 +348,33 @@ rect.artistBox{
   stroke:black;
   stroke-width:1px;
 }
+
+a.descLink:link{
+  text-decoration: none;
+  color: white;
+  /* border: white 1px solid;
+  padding: 5px; */
+  /* float:left; */
+}
+
+a:visited {
+  text-decoration: none;
+  color: yellow;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.title{
+  color:white;
+}
+
+.subtitle{
+  color:white;
+}
+
+div#writeupDiv{
+  width:90%;
+  margin:50px 5%;
+}
