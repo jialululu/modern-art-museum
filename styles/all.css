@@ -248,6 +248,8 @@ div.image-wrapper {
   overflow: hidden;
   height:320px;
   position: relative;
+  border-left: 1px black solid;
+  border-right: 1px black solid;
 }
 
 svg.graphWrapper{

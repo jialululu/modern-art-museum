@@ -28,7 +28,7 @@ function convertToRGB(list){
 
 //load data
 d3.queue()
-  .defer(d3.json,"datasets/data_final.json")
+  .defer(d3.json,"datasets/compress_color_artwork_final.json")
   .defer(d3.json,"datasets/moma_artists.json")
   .await(plot);
 function plot(error,artworks,artists){
@@ -319,9 +319,9 @@ function plot(error,artworks,artists){
               .attr('class','thumbnail')
               .attr('id',function(d){return 'thumbnail'+d['ObjectID'];});
 
-            console.log('img',img.node());
-            img_width = img.node().getBoundingClientRect();
-            console.log('img_width',img.node());
+            // console.log('img',img.node());
+            // img_width = img.node().getBoundingClientRect();
+            // console.log('img_width',img.node());
 
             imageWrapper.on('click',function(d){
                 d3.selectAll('.artworkDetails').remove();
@@ -332,7 +332,8 @@ function plot(error,artworks,artists){
 
                 d3.selectAll('.image-wrapper')
                   .style('width','30px')
-                  .style('border','none');
+                  .style('border-left','1px black solid')
+                  .style('border-right','1px black solid');
 
                 var svg = d3.select(this)
                   .transition()
