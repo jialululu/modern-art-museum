@@ -157,6 +157,12 @@ function plot(error,artworks,artists,recommends){
                 var repColor = [255,255,255];
               }
               // console.log('???',repColor)
+              // console.log(repColor);
+              // var hsl = rgbToHsl(repColor[0],repColor[1],repColor[2]);
+              // console.log(hsl);
+              // var normalizeHSL = [hsl[0]*100,hsl[1],0.5];
+              // console.log(normalizeHSL);
+              // return convertToHSL(normalizeHSL);
               return convertToRGB(repColor);
           })
           .on('mouseover',function(d){
@@ -189,7 +195,7 @@ function plot(error,artworks,artists,recommends){
                   var repColor = [255,255,255];
                 }
                 var hsl = rgbToHsl(repColor[0],repColor[1],repColor[2]);
-                // var normalizedHSL =
+
                 //TODO: Add graphs for each artists
                 d3.select('#selectedArtists').append('button')
                   .html(function(){
