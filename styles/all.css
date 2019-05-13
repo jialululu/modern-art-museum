@@ -227,7 +227,7 @@ div.artistDiv{
 }
 
 div.artistDesc{
-  width:10%;
+  width:15%;
   height:300px;
   float:left;
   margin:10px;
@@ -244,7 +244,7 @@ div.thumbnailLabels{
 }
 
 div.thumbnailWrapper{
-  width:80%;
+  width:75%;
   height:310px;
   margin-top: 20px;
   white-space: nowrap;
@@ -337,4 +337,14 @@ img.recommendImg{
   margin: 5px 2%;
   display: run-in;
   max-width: 90%;
+}
+
+svg.artistMatrix{
+  margin-top:10px;
+  height:230px;
+}
+
+rect.artistBox{
+  stroke:black;
+  stroke-width:1px;
 }
