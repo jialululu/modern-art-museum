@@ -30,7 +30,7 @@ function convertToRGB(list){
 d3.queue()
   .defer(d3.json,"datasets/compress_color_artwork_final.json")
   .defer(d3.json,"datasets/moma_artist_final.json")
-  .defer(d3.json,"datasets/similar_vecs.json")
+  .defer(d3.json,"datasets/similar_vecs_final.json")
   .await(plot);
 function plot(error,artworks,artists,recommends){
 
