@@ -47,17 +47,18 @@ function rgbToHsl(r, g, b) {
 
 function convertToHSL(list){
     result = 'hsl('
-    list.forEach(function(d){
-      result = result + d + ',';
-    })
-    result = result.substring(0,result.length-1) + ')';
-    return result;
+    var h = list[0]
+    var s = list[1]+'%'
+    // var l = list[2]+'%'
+    var l = '50%';
+    // result = result.substring(0,result.length-1) + '%)';
+    return 'hsl(' + h + ',' + s + ',' + l + ')';
 }
 
 //load data
 d3.queue()
   .defer(d3.json,"datasets/compress_color_artwork_final.json")
-  .defer(d3.json,"datasets//moma_artist_modified.json")
+  .defer(d3.json,"datasets//moma_artist_hls.json")
   .defer(d3.json,"datasets/similar_vecs_final.json")
   .await(plot);
 function plot(error,artworks,artists,recommends){
@@ -154,8 +155,8 @@ function plot(error,artworks,artists,recommends){
                 var repColor = artistsNestById[artistId][0]['Represent_color'];
               } else {
                 var repColor = [255,255,255];
-                console.log('???',repColor)
               }
+              // console.log('???',repColor)
               return convertToRGB(repColor);
           })
           .on('mouseover',function(d){
@@ -188,7 +189,7 @@ function plot(error,artworks,artists,recommends){
                   var repColor = [255,255,255];
                 }
                 var hsl = rgbToHsl(repColor[0],repColor[1],repColor[2]);
-
+                // var normalizedHSL =
                 //TODO: Add graphs for each artists
                 d3.select('#selectedArtists').append('button')
                   .html(function(){
@@ -202,17 +203,18 @@ function plot(error,artworks,artists,recommends){
                     return convertToRGB(repColor);
                   })
                   .style('color',function(){
-                    if (lightness > 0.5){return 'black';} else {return 'white';}
+                    // if (lightness > 0.5){return 'black';} else {return 'white';}
+                    return 'white';
                   })
-                  .style('border',function(){
-                    if (lightness > 0.5){return 'grey 0.5px solid';} else {return 'white 0.5px solid';}
-                  })
+                  // .style('border',function(){
+                  //   if (lightness > 0.5){return 'grey 0.5px solid';} else {return 'white 0.5px solid';}
+                  // })
                   .on('click',function(){
                       var index = selectArtistsList.indexOf(d)
-                      console.log('???',d);
+                      // console.log('???',d);
                       selectArtistsList.splice(index,1);
                       d3.select(this).remove();
-                      console.log('???',d3.selectAll('bar'+d));
+                      // console.log('???',d3.selectAll('bar'+d));
                       d3.selectAll('.bar'+d).classed('selected',false);
 
                   });
