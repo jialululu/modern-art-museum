@@ -26,17 +26,36 @@ function convertToRGB(list){
     return result;
 }
 
+function rgbToHsl(r, g, b) {
+  r /= 255, g /= 255, b /= 255;
+  var max = Math.max(r, g, b), min = Math.min(r, g, b);
+  var h, s, l = (max + min) / 2;
+  if (max == min) {
+    h = s = 0; // achromatic
+  } else {
+    var d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+    }
+    h /= 6;
+  }
+  return [ h, s, l ];
+}
+
 //load data
 d3.queue()
   .defer(d3.json,"datasets/compress_color_artwork_final.json")
-  .defer(d3.json,"datasets/moma_artist_final.json")
+  .defer(d3.json,"datasets//moma_artist_modified.json")
   .defer(d3.json,"datasets/similar_vecs_final.json")
   .await(plot);
 function plot(error,artworks,artists,recommends){
 
   if (error) throw error;
   console.log(artworks[0]);
-  console.log(artists[0]);
+  console.log(artists[1]);
   console.log(recommends[3]);
 
   var countByDepartment = d3.nest()
@@ -119,13 +138,14 @@ function plot(error,artworks,artists,recommends){
               return data[d]/total*100+'%';
           })
           .style('background-color',function(d){
-              // console.log(d[0])
-              // console.log(artistsNestById[d[0]])
-              if (artistsNestById[d[0]]){
-                var repColor = artistsNestById[d[0]][0]['Represent_color'];
-                // console.log('???',repColor)
+
+              var artistId = d.split(',')[0]
+              // console.log(artistId)
+              if (artistsNestById[artistId]){
+                var repColor = artistsNestById[artistId][0]['Represent_color'];
               } else {
                 var repColor = [255,255,255];
+                console.log('???',repColor)
               }
               return convertToRGB(repColor);
           })
@@ -152,6 +172,14 @@ function plot(error,artworks,artists,recommends){
                 selectArtistsList.push(d);
                 d3.selectAll('.bar'+d).classed('selected',true);
 
+                var artistId = d.split(',')[0]
+                if (artistsNestById[artistId]){
+                  var repColor = artistsNestById[artistId][0]['Represent_color'];
+                } else {
+                  var repColor = [255,255,255];
+                }
+                var lightness = rgbToHsl(repColor[0],repColor[1],repColor[2])[2];
+
                 //TODO: Add graphs for each artists
                 d3.select('#selectedArtists').append('button')
                   .html(function(){
@@ -162,12 +190,13 @@ function plot(error,artworks,artists,recommends){
                   }})
                   .attr('class','selectedArtist')
                   .style('background-color',function(){
-                      if (artistsNestById[d[0]]){
-                        var repColor = artistsNestById[d[0]][0]['Represent_color'];
-                      } else {
-                        var repColor = [255,255,255];
-                      }
-                      return convertToRGB(repColor);
+                    return convertToRGB(repColor);
+                  })
+                  .style('color',function(){
+                    if (lightness > 0.5){return 'black';} else {return 'white';}
+                  })
+                  .style('border',function(){
+                    if (lightness > 0.5){return 'grey 0.5px solid';} else {return 'white 0.5px solid';}
                   })
                   .on('click',function(){
                       var index = selectArtistsList.indexOf(d)
