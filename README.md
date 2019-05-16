@@ -18,5 +18,5 @@ Data are obtained from a dataset oraganized by MoMA (https://github.com/Museumof
 
 **Work Division**
 
-Work is divided fairly among group members. Qianhui Liang was in charge of backend data wrangling and data processing. Yichen Jia built the frame of the webpage and built most part of the visualizations. Jialu Tan completed concept design of user interface and helped with second visualization. 
+Work is divided fairly among group members. Qianhui Liang was in charge of backend data wrangling and data processing，and worked on the final paper. Yichen Jia built the frame of the webpage and built most part of the visualizations. Jialu Tan completed concept design of user interface, helped with second visualization, and worked on the final paper. 
 
