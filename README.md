@@ -22,6 +22,11 @@ The webpage contains three parts, stacked bars with multiple colors, plotted art
 
 Data are obtained from a dataset oraganized by MoMA (https://github.com/MuseumofModernArt/collection). Pictures of the artworks are scraped from MoMA's offical website (www.moma.org).
 
+# Summary Images
+
+![screen shot 2019-05-15 at 11 59 44 pm](https://github.mit.edu/storage/user/13638/files/eb023cec-776d-11e9-8a75-1e5168141f56)
+![screen shot 2019-05-16 at 12 00 01 am](https://github.mit.edu/storage/user/13638/files/f9a74594-776d-11e9-8ef0-fac9b4029d96)
+![screen shot 2019-05-16 at 12 00 21 am](https://github.mit.edu/storage/user/13638/files/02e931bc-776e-11e9-95b5-76d49e2260d1)
 
 # Work Division
 
