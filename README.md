@@ -1,8 +1,15 @@
-# modern-art-museums
+# A Slice of MoMA
+
+**Team Member: Yichen Jia, Qianhui Liang, Jialu Tan**
+
 
 Visualization URL: https://github.mit.edu/pages/6894-sp19/modern-art-museums/ 
 
 Interactive Poster: https://youtu.be/P5spt-hrf68
+
+Final Paper: see **'final paper'** folder in this repo
+
+
 
 **Project Introduction**
 
