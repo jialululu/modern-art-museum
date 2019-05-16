@@ -45,10 +45,20 @@ function rgbToHsl(r, g, b) {
   return [ h, s, l ];
 }
 
+function convertToHSL(list){
+    result = 'hsl('
+    var h = list[0]
+    var s = list[1]+'%'
+    // var l = list[2]+'%'
+    var l = '50%';
+    // result = result.substring(0,result.length-1) + '%)';
+    return 'hsl(' + h + ',' + s + ',' + l + ')';
+}
+
 //load data
 d3.queue()
   .defer(d3.json,"datasets/compress_color_artwork_final.json")
-  .defer(d3.json,"datasets//moma_artist_modified.json")
+  .defer(d3.json,"datasets//moma_artist_hls.json")
   .defer(d3.json,"datasets/similar_vecs_final.json")
   .await(plot);
 function plot(error,artworks,artists,recommends){
@@ -145,8 +155,14 @@ function plot(error,artworks,artists,recommends){
                 var repColor = artistsNestById[artistId][0]['Represent_color'];
               } else {
                 var repColor = [255,255,255];
-                console.log('???',repColor)
               }
+              // console.log('???',repColor)
+              // console.log(repColor);
+              // var hsl = rgbToHsl(repColor[0],repColor[1],repColor[2]);
+              // console.log(hsl);
+              // var normalizeHSL = [hsl[0]*100,hsl[1],0.5];
+              // console.log(normalizeHSL);
+              // return convertToHSL(normalizeHSL);
               return convertToRGB(repColor);
           })
           .on('mouseover',function(d){
@@ -178,7 +194,7 @@ function plot(error,artworks,artists,recommends){
                 } else {
                   var repColor = [255,255,255];
                 }
-                var lightness = rgbToHsl(repColor[0],repColor[1],repColor[2])[2];
+                var hsl = rgbToHsl(repColor[0],repColor[1],repColor[2]);
 
                 //TODO: Add graphs for each artists
                 d3.select('#selectedArtists').append('button')
@@ -193,17 +209,18 @@ function plot(error,artworks,artists,recommends){
                     return convertToRGB(repColor);
                   })
                   .style('color',function(){
-                    if (lightness > 0.5){return 'black';} else {return 'white';}
+                    // if (lightness > 0.5){return 'black';} else {return 'white';}
+                    return 'white';
                   })
-                  .style('border',function(){
-                    if (lightness > 0.5){return 'grey 0.5px solid';} else {return 'white 0.5px solid';}
-                  })
+                  // .style('border',function(){
+                  //   if (lightness > 0.5){return 'grey 0.5px solid';} else {return 'white 0.5px solid';}
+                  // })
                   .on('click',function(){
                       var index = selectArtistsList.indexOf(d)
-                      console.log('???',d);
+                      // console.log('???',d);
                       selectArtistsList.splice(index,1);
                       d3.select(this).remove();
-                      console.log('???',d3.selectAll('bar'+d));
+                      // console.log('???',d3.selectAll('bar'+d));
                       d3.selectAll('.bar'+d).classed('selected',false);
 
                   });
@@ -297,42 +314,46 @@ function plot(error,artworks,artists,recommends){
 
             var artistInfo = artistsNestById[id][0];
             var artworksInfo = filteredData[id];
-            // console.log('artistInfo',artistInfo);
-            // console.log('artworksInfo',artworksInfo);
+
             var labelXPosition = 47;
             var sizeScaleRatio = 10;
             var artistDesc = artistWrapper.append('div')
                 .attr('class','artistDesc')
                 .html(artistInfo['DisplayName'] + '</br>' + artistInfo['ArtistBio']);
 
-            // the matrix of artists' artwork color representation
-            // var artistMatrix = artistDesc.append("svg")
-            //     .attr('class', 'artistMatrix');
-            //
-            // var birthyr = artistInfo['BeginDate']
-            //
-            // var matTooltipDiv = d3.select('body').append("div")
-            //     .attr("class", "matTooltip")
-            //     .style("opacity", 0);
-            //
-            // artistMatrix.selectAll('.artistBox')
-            //     .data(function (d){return d['color'];}).enter()
-            //     .append('rect')
-            //     .attr('class', 'artistBox')
-            //     .attr('x', function(d,i){return (i%10)*10;})
-            //     .attr('y', function(d,i){return (parseInt(i/10));})
-            //     .attr('height', 10)
-            //     .attr('width', 10)
-            //     .attr('fill', function(d){return convertToRGB(d);})
-            //     .on('mouseover',function(d,i){
-            //         matTooltipDiv.style('opacity',1);
-            //         matTooltipDiv.html(function (){
-            //         return str(birthyr + i);})
-            //             .style("left", (d3.event.pageX) + 5 + "px")
-            //             .style("top", (d3.event.pageY - 50) + "px");
-            //     });
+            function plotColorMatrix(){
+              // the matrix of artists' artwork color representation
+              var artistMatrix = artistDesc.append("svg")
+                  .attr('class', 'artistMatrix');
 
+              var birthyr = artistInfo['BeginDate']
+              //
+              // var matTooltipDiv = d3.select('body').append("div")
+              //     .attr("class", "matTooltip")
+              //     .style("opacity", 0);
 
+              artistMatrix.selectAll('.artistBox')
+                  .data(function(){
+                      console.log(artworksInfo)
+                      return artworksInfo
+                  }).enter()
+                  .append('rect')
+                  .attr('class', 'artistBox')
+                  .attr('x', function(d,i){return (i%14)*10;})
+                  .attr('y', function(d,i){return (Math.round(i/14)*10);})
+                  .attr('height', 10)
+                  .attr('width', 10)
+                  .attr('fill', function(d){return convertToRGB(d['Max Color']);})
+                  // .attr('stroke', function(d){return convertToRGB(d['Max Color']);})
+                  .on('mouseover',function(d,i){
+                      // matTooltipDiv.style('opacity',1);
+                      // matTooltipDiv.html(function (){
+                      // return str(birthyr + i);})
+                      //     .style("left", (d3.event.pageX) + 5 + "px")
+                      //     .style("top", (d3.event.pageY - 50) + "px");
+                  });
+            }
+            plotColorMatrix();
             // plotArtistGraph(artistInfo);
             var thumbnailLabelsSvg = artistWrapper.append('div')
                 .attr('class','thumbnailLabels')
@@ -424,9 +445,6 @@ function plot(error,artworks,artists,recommends){
                   // plotDetails(d3.select(this));
                   plotColorAnalysis(d3.select(this).select('svg'));
               })
-
-            function plotDetails(imageWrapper_i){
-            }
 
             var graphWrapper = imageWrapper.append('svg')
                 .attr('class','graphWrapper');
